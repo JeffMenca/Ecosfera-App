@@ -1,14 +1,14 @@
 class WeatherRecord {
   final String fechaHora;
   final double temperatura;
-  final double humedad;
-  final double radiacion;
+  final String humedad;
+  final String radiacion;
   final double suelo1;
   final double suelo2;
   final double suelo3;
   final double direccion;
   final double velocidad;
-  final double precipitacion;
+  final String precipitacion;
 
   WeatherRecord({
     required this.fechaHora,
@@ -27,14 +27,14 @@ class WeatherRecord {
     return WeatherRecord(
       fechaHora: json['fechahora'],
       temperatura: double.parse(json['temperatura']),
-      humedad: double.parse(json['humedad']),
-      radiacion: double.parse(json['radiacion']),
+      humedad: json['humedad'],
+      radiacion:json['radiacion'],
       suelo1: double.parse(json['suelo1']),
       suelo2: double.parse(json['suelo2']),
       suelo3: double.parse(json['suelo3']),
       direccion: double.parse(json['direcion']), // Asegúrate de corregir la ortografía si es necesario
       velocidad: double.parse(json['velocidad']),
-      precipitacion: double.parse(json['precipitacion']),
+      precipitacion: json['precipitacion'],
     );
   }
 }
