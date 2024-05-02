@@ -1,3 +1,5 @@
+import 'package:ecosfera/presentation/models/weather_record.dart';
+import 'package:ecosfera/presentation/services/services.dart';
 import 'package:ecosfera/presentation/widgets/custom_card.dart';
 import 'package:flutter/material.dart';
 
@@ -10,9 +12,32 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String temperature = '15°';
+  String temperature = 'Sin datos';
   String weatherCondition = 'Tormentas';
   String imageUrl = 'https://cdn-icons-png.freepik.com/512/263/263884.png';
+
+ final ApiService _apiService = ApiService();
+  WeatherRecord? _weatherData;
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWeatherData();
+  }
+  
+Future<void> _fetchWeatherData() async {
+    try {
+      _weatherData = await _apiService.fetchWeatherRecord();
+      temperature = "${_weatherData?.temperatura.toStringAsFixed(2)}°";
+    } catch (e) {
+      _error = e.toString();
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,12 +92,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 20), // Espacio entre los dos elementos
             
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CustomCard(icon: Icons.ac_unit, text: 'Texto 1'),
-                CustomCard(icon: Icons.wb_sunny, text: 'Texto 2'),
-                CustomCard(icon: Icons.cloud, text: 'Texto 3'),
+                CustomCard(icon: Icons.ac_unit, text: _weatherData?.humedad ?? "sin datos" ),
+                CustomCard(icon: Icons.wb_sunny, text: _weatherData?.radiacion ?? "sin datos"),
+                CustomCard(icon: Icons.cloud, text: _weatherData?.precipitacion ?? "sin datos"),
               ],
             ),
           ],
