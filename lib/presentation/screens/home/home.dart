@@ -27,17 +27,28 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchWeatherData();
   }
 
-  Future<void> _fetchWeatherData() async {
-    try {
-      _weatherData = await _apiService.fetchWeatherRecord();
-      temperature = "${_weatherData?.temperatura.toStringAsFixed(2)}°";
-    } catch (e) {
-      _error = e.toString();
-    }
-    setState(() {
-      _isLoading = false;
-    });
+  
+Future<void> _fetchWeatherData() async {
+  setState(() {
+    _isLoading = true; // Asegúrate de indicar que la carga está en progreso
+  });
+
+  try {
+    _weatherData = await _apiService.fetchWeatherRecord();
+    temperature = "${_weatherData?.temperatura.toStringAsFixed(2)}°";
+    weatherCondition =  "Desconocido"; 
+  } catch (e) {
+    _error = e.toString();
+    print(_error);
+    temperature = 'Sin datos';
+    weatherCondition = 'Error'; // Provee un mensaje de error más específico
   }
+
+  setState(() {
+    _isLoading = false; // Finaliza la carga y actualiza la UI
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {

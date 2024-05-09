@@ -32,7 +32,7 @@ class WeatherRecord {
       suelo1: double.parse(json['suelo1']),
       suelo2: double.parse(json['suelo2']),
       suelo3: double.parse(json['suelo3']),
-      direccion: double.parse(json['direcion']), // Asegúrate de corregir la ortografía si es necesario
+      direccion: double.parse(json['direccion']),
       velocidad: double.parse(json['velocidad']),
       precipitacion: json['precipitacion'],
     );
