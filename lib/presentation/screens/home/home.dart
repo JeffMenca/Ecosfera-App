@@ -1,12 +1,42 @@
+import 'package:flutter/material.dart';
 import 'package:ecosfera/presentation/models/weather_record.dart';
 import 'package:ecosfera/presentation/services/services.dart';
 import 'package:ecosfera/presentation/widgets/custom_card.dart';
-import 'package:flutter/material.dart';
 import 'package:ecosfera/presentation/Classes/weather_condition_resolver.dart';
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MainPageView(),
+    );
+  }
+}
+
+class MainPageView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PageView.builder(
+        itemCount: 3,
+        itemBuilder: (context, index) {
+          return HomeScreen(
+            key: UniqueKey(), 
+            pageIndex: index,  
+          );
+        },
+      ),
+    );
+  }
+}
+
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/';
-  const HomeScreen({super.key});
+  final int pageIndex;
+
+  const HomeScreen({super.key, this.pageIndex = 0});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -27,7 +57,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchWeatherData();
+    String environment = 'Cunoc';
+    if (widget.pageIndex == 1) {
+      environment = 'Conce';
+    } else if (widget.pageIndex == 2) {
+      environment = 'Cantel';
+    }
+    _fetchWeatherData(environment);
   }
 
   double? tryParseDouble(String? value) {
@@ -41,13 +77,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return result;
   }
 
-  Future<void> _fetchWeatherData() async {
+  Future<void> _fetchWeatherData(String enviroment) async {
     setState(() {
       _isLoading = true; // Asegúrate de indicar que la carga está en progreso
     });
 
     try {
-      _weatherData = await _apiService.fetchWeatherRecord();
+      _weatherData = await _apiService.fetchWeatherRecord(enviroment);
       temperature = "${_weatherData?.temperatura.toStringAsFixed(2)}°";
       // Convertimos los valores de tipo String? a double?
       double? humidity = tryParseDouble(_weatherData?.humedad);
@@ -74,6 +110,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Color backgroundColor = Color(0xFF1B1D1F); 
+    Color appBarColor = Color(0xFF1B1D1F); 
+
+    if (widget.pageIndex == 1) {
+      backgroundColor = const Color.fromARGB(255, 128, 246, 161)!;
+      appBarColor = Colors.green[800]!;
+    } else if (widget.pageIndex == 2) {
+      backgroundColor = Colors.redAccent[100]!;
+      appBarColor = Colors.red[800]!;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title:
@@ -81,8 +128,8 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: const Color(0xFF1B1D1F),
       ),
       body: Container(
-        padding: const EdgeInsets.all(20.0),
-        color: const Color(0xFF1B1D1F),
+        padding: EdgeInsets.all(20.0),
+        color: backgroundColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -97,21 +144,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         temperature,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 50.0,
-                          color: Color(0xFFF3F3F3),
-                        ),
+                        style: TextStyle(fontSize: 50.0, color: Colors.white),
                       ),
                       const SizedBox(
                           height: 10), // Espacio entre los dos textos
                       Text(
                         weatherCondition,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 15.0,
-                          color: Color.fromARGB(255, 182, 182, 182),
-                        ),
+                        style: TextStyle(fontSize: 15.0, color: Colors.grey[350]),
                       ),
                     ],
                   ),
