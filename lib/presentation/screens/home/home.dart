@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ecosfera/presentation/models/weather_record.dart';
 import 'package:ecosfera/presentation/services/services.dart';
 import 'package:ecosfera/presentation/widgets/custom_card.dart';
-
+import 'package:ecosfera/presentation/Classes/weather_condition_resolver.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -31,6 +31,7 @@ class MainPageView extends StatelessWidget {
   }
 }
 
+
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/';
   final int pageIndex;
@@ -43,8 +44,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String temperature = 'Sin datos';
-  String weatherCondition = 'Tormentas';
-  String imageUrl = 'https://cdn-icons-png.freepik.com/512/263/263884.png';
+  String weatherCondition = "Desconocido";
+  String weatherImageUrl =
+      'https://cdn-icons-png.freepik.com/512/263/263884.png';
+  WeatherConditionResolver weatherResolver = WeatherConditionResolver();
 
   final ApiService _apiService = ApiService();
   WeatherRecord? _weatherData;
@@ -62,33 +65,47 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     _fetchWeatherData(environment);
   }
-  
-  Future<void> _fetchWeatherData(String environment) async {
+
+  double? tryParseDouble(String? value) {
+    if (value == null) return null;
+    double? result;
+    try {
+      result = double.parse(value);
+    } catch (e) {
+      result = null;
+    }
+    return result;
+  }
+
+  Future<void> _fetchWeatherData(String enviroment) async {
     setState(() {
-      _isLoading = true;
+      _isLoading = true; // Asegúrate de indicar que la carga está en progreso
     });
 
     try {
-      var fetchedData = await _apiService.fetchWeatherRecord(environment);
-      if (fetchedData != null) {
-        setState(() {
-          _weatherData = fetchedData;
-          temperature = "${_weatherData!.temperatura.toStringAsFixed(2)}°";
-          weatherCondition = environment;
-          _isLoading = false;
-        });
-      } else {
-        throw Exception('Received null data from the API');
-      }
+      _weatherData = await _apiService.fetchWeatherRecord(enviroment);
+      temperature = "${_weatherData?.temperatura.toStringAsFixed(2)}°";
+      // Convertimos los valores de tipo String? a double?
+      double? humidity = tryParseDouble(_weatherData?.humedad);
+      double? radiation = tryParseDouble(_weatherData?.radiacion);
+      double? precipitation = tryParseDouble(_weatherData?.precipitacion);
+
+      // Aquí obtenemos la condición del clima usando la instancia de WeatherConditionResolver
+      weatherCondition = weatherResolver.resolveWeatherCondition(
+          _weatherData?.temperatura ?? 0, humidity, radiation, precipitation);
+
+      // Ahora obtenemos la URL de la imagen correspondiente a la condición del clima
+      //weatherImageUrl = weatherResolver.resolveWeatherImage(weatherCondition);
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-        print(_error);
-        temperature = 'Sin datos';
-        weatherCondition = 'Error';
-        _isLoading = false;
-      });
+      _error = e.toString();
+      print(_error);
+      temperature = 'Sin datos';
+      weatherCondition = 'Error'; // Provee un mensaje de error más específico
     }
+
+    setState(() {
+      _isLoading = false; // Finaliza la carga y actualiza la UI
+    });
   }
 
   @override
@@ -106,8 +123,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ecosfera - Página ${widget.pageIndex + 1}'),
-        backgroundColor: appBarColor,
+        title:
+            const Text('Ecosfera', style: TextStyle(color: Color(0xFFF3F3F3))),
+        backgroundColor: const Color(0xFF1B1D1F),
       ),
       body: Container(
         padding: EdgeInsets.all(20.0),
@@ -128,7 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         temperature,
                         style: TextStyle(fontSize: 50.0, color: Colors.white),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(
+                          height: 10), // Espacio entre los dos textos
                       Text(
                         weatherCondition,
                         style: TextStyle(fontSize: 15.0, color: Colors.grey[350]),
@@ -136,18 +155,49 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                Image.network(imageUrl, fit: BoxFit.contain, width: 100.0, height: 100.0),
+                const SizedBox(width: 20), // Espacio entre los dos elementos
+                Image.network(
+                  weatherImageUrl,
+                  fit: BoxFit.contain,
+                  width: 100.0,
+                  height: 100.0,
+                ),
               ],
             ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomCard(icon: Icons.ac_unit, text: _weatherData?.humedad ?? "sin datos"),
-                CustomCard(icon: Icons.wb_sunny, text: _weatherData?.radiacion ?? "sin datos"),
-                CustomCard(icon: Icons.cloud, text: _weatherData?.precipitacion ?? "sin datos"),
-              ],
-            ),
+            const SizedBox(height: 20), // Espacio entre los dos elementos
+
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  vertical: 20), // Agregar padding solo en Y
+              decoration: BoxDecoration(
+                color: const Color(0xFF20232A), // Color de fondo
+                borderRadius:
+                    BorderRadius.circular(10), // Opcional: bordes redondeados
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomCard(
+                      icon: Icons.ac_unit,
+                      data: _weatherData?.humedad != null
+                          ? '${double.parse(_weatherData!.humedad).toStringAsFixed(2)}%' // Convierte a double, redondea a dos decimales y agrega el símbolo de porcentaje
+                          : 'sin datos',
+                      title: 'Humedad'),
+                  CustomCard(
+                      icon: Icons.wb_sunny,
+                      data: _weatherData?.radiacion != null
+                          ? '${double.parse(_weatherData!.radiacion).toStringAsFixed(2)} mSv' // Convierte a double, redondea a dos decimales y agrega el símbolo de porcentaje
+                          : 'sin datos',
+                      title: 'Radiación'),
+                  CustomCard(
+                      icon: Icons.cloud,
+                      data: _weatherData?.precipitacion != null
+                          ? '${double.parse(_weatherData!.precipitacion).toStringAsFixed(2)}%' // Convierte a double, redondea a dos decimales y agrega el símbolo de porcentaje
+                          : 'sin datos',
+                      title: 'Precipitación'),
+                ],
+              ),
+            )
           ],
         ),
       ),
