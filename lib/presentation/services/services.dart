@@ -9,7 +9,7 @@ class ApiService {
     try {
       final response = await http.get(Uri.parse('$baseUrl/Cunoc'));
       if (response.statusCode == 200) {
-        Map<String, dynamic> jsonData = json.decode(response.body)[0];
+        Map<String, dynamic> jsonData = json.decode(response.body);
         return WeatherRecord.fromJson(jsonData);
       } else {
         throw Exception('Failed to load data: ${response.statusCode}');
@@ -21,3 +21,4 @@ class ApiService {
     }
   }
 }
+
