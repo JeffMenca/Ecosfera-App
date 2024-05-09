@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
   final IconData icon;
-  final String text;
+  final String data;
+  final String title;
 
   const CustomCard({
     Key? key,
     required this.icon,
-    required this.text,
+    required this.data,
+    required this.title,
   }) : super(key: key);
 
   @override
@@ -22,11 +24,19 @@ class CustomCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            text,
+            data,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 15.0,
               color: Colors.white,
+            ),
+          ),
+           Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 13.0,
+              color: Color.fromARGB(255, 182, 182, 182),
             ),
           ),
         ],

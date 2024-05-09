@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String weatherCondition = 'Tormentas';
   String imageUrl = 'https://cdn-icons-png.freepik.com/512/263/263884.png';
 
- final ApiService _apiService = ApiService();
+  final ApiService _apiService = ApiService();
   WeatherRecord? _weatherData;
   bool _isLoading = true;
   String? _error;
@@ -26,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _fetchWeatherData();
   }
+
   
 Future<void> _fetchWeatherData() async {
   setState(() {
@@ -53,7 +54,8 @@ Future<void> _fetchWeatherData() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ecosfera', style: TextStyle(color: Color(0xFFF3F3F3))),
+        title:
+            const Text('Ecosfera', style: TextStyle(color: Color(0xFFF3F3F3))),
         backgroundColor: const Color(0xFF1B1D1F),
       ),
       body: Container(
@@ -79,7 +81,8 @@ Future<void> _fetchWeatherData() async {
                           color: Color(0xFFF3F3F3),
                         ),
                       ),
-                      const SizedBox(height: 10), // Espacio entre los dos textos
+                      const SizedBox(
+                          height: 10), // Espacio entre los dos textos
                       Text(
                         weatherCondition,
                         textAlign: TextAlign.center,
@@ -101,14 +104,33 @@ Future<void> _fetchWeatherData() async {
               ],
             ),
             const SizedBox(height: 20), // Espacio entre los dos elementos
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomCard(icon: Icons.ac_unit, text: _weatherData?.humedad ?? "sin datos" ),
-                CustomCard(icon: Icons.wb_sunny, text: _weatherData?.radiacion ?? "sin datos"),
-                CustomCard(icon: Icons.cloud, text: _weatherData?.precipitacion ?? "sin datos"),
-              ],
-            ),
+
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  vertical: 20), // Agregar padding solo en Y
+              decoration: BoxDecoration(
+                color: const Color(0xFF20232A), // Color de fondo
+                borderRadius:
+                    BorderRadius.circular(10), // Opcional: bordes redondeados
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomCard(
+                      icon: Icons.ac_unit,
+                      data: _weatherData?.humedad ?? "sin datos",
+                      title: 'Humedad'),
+                  CustomCard(
+                      icon: Icons.wb_sunny,
+                      data: _weatherData?.radiacion ?? "sin datos",
+                      title: 'Radiacion'),
+                  CustomCard(
+                      icon: Icons.cloud,
+                      data: _weatherData?.precipitacion ?? "sin datos",
+                      title: 'Precipitacion'),
+                ],
+              ),
+            )
           ],
         ),
       ),
