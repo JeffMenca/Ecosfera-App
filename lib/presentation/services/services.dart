@@ -5,9 +5,9 @@ import 'package:http/http.dart' as http;
 class ApiService {
   final String baseUrl = "https://cyt.cunoc.edu.gt/index.php/Ultimo-Registro";
 
-  Future<WeatherRecord> fetchWeatherRecord() async {
+  Future<WeatherRecord> fetchWeatherRecord(enviroment) async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/Cunoc'));
+      final response = await http.get(Uri.parse('$baseUrl/$enviroment'));
       if (response.statusCode == 200) {
         Map<String, dynamic> jsonData = json.decode(response.body);
         return WeatherRecord.fromJson(jsonData);

@@ -1,11 +1,41 @@
+import 'package:flutter/material.dart';
 import 'package:ecosfera/presentation/models/weather_record.dart';
 import 'package:ecosfera/presentation/services/services.dart';
 import 'package:ecosfera/presentation/widgets/custom_card.dart';
-import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MainPageView(),
+    );
+  }
+}
+
+class MainPageView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PageView.builder(
+        itemCount: 3,
+        itemBuilder: (context, index) {
+          return HomeScreen(
+            key: UniqueKey(), 
+            pageIndex: index,  
+          );
+        },
+      ),
+    );
+  }
+}
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/';
-  const HomeScreen({super.key});
+  final int pageIndex;
+
+  const HomeScreen({super.key, this.pageIndex = 0});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -16,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String weatherCondition = 'Tormentas';
   String imageUrl = 'https://cdn-icons-png.freepik.com/512/263/263884.png';
 
- final ApiService _apiService = ApiService();
+  final ApiService _apiService = ApiService();
   WeatherRecord? _weatherData;
   bool _isLoading = true;
   String? _error;
@@ -24,41 +54,64 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchWeatherData();
+    String environment = 'Cunoc';
+    if (widget.pageIndex == 1) {
+      environment = 'Conce';
+    } else if (widget.pageIndex == 2) {
+      environment = 'Cantel';
+    }
+    _fetchWeatherData(environment);
   }
   
-Future<void> _fetchWeatherData() async {
-  setState(() {
-    _isLoading = true; // Asegúrate de indicar que la carga está en progreso
-  });
+  Future<void> _fetchWeatherData(String environment) async {
+    setState(() {
+      _isLoading = true;
+    });
 
-  try {
-    _weatherData = await _apiService.fetchWeatherRecord();
-    temperature = "${_weatherData?.temperatura.toStringAsFixed(2)}°";
-    weatherCondition =  "Desconocido"; 
-  } catch (e) {
-    _error = e.toString();
-    print(_error);
-    temperature = 'Sin datos';
-    weatherCondition = 'Error'; // Provee un mensaje de error más específico
+    try {
+      var fetchedData = await _apiService.fetchWeatherRecord(environment);
+      if (fetchedData != null) {
+        setState(() {
+          _weatherData = fetchedData;
+          temperature = "${_weatherData!.temperatura.toStringAsFixed(2)}°";
+          weatherCondition = environment;
+          _isLoading = false;
+        });
+      } else {
+        throw Exception('Received null data from the API');
+      }
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        print(_error);
+        temperature = 'Sin datos';
+        weatherCondition = 'Error';
+        _isLoading = false;
+      });
+    }
   }
-
-  setState(() {
-    _isLoading = false; // Finaliza la carga y actualiza la UI
-  });
-}
-
 
   @override
   Widget build(BuildContext context) {
+    Color backgroundColor = Color(0xFF1B1D1F); 
+    Color appBarColor = Color(0xFF1B1D1F); 
+
+    if (widget.pageIndex == 1) {
+      backgroundColor = const Color.fromARGB(255, 128, 246, 161)!;
+      appBarColor = Colors.green[800]!;
+    } else if (widget.pageIndex == 2) {
+      backgroundColor = Colors.redAccent[100]!;
+      appBarColor = Colors.red[800]!;
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ecosfera', style: TextStyle(color: Color(0xFFF3F3F3))),
-        backgroundColor: const Color(0xFF1B1D1F),
+        title: Text('Ecosfera - Página ${widget.pageIndex + 1}'),
+        backgroundColor: appBarColor,
       ),
       body: Container(
-        padding: const EdgeInsets.all(20.0),
-        color: const Color(0xFF1B1D1F),
+        padding: EdgeInsets.all(20.0),
+        color: backgroundColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -73,38 +126,24 @@ Future<void> _fetchWeatherData() async {
                     children: [
                       Text(
                         temperature,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 50.0,
-                          color: Color(0xFFF3F3F3),
-                        ),
+                        style: TextStyle(fontSize: 50.0, color: Colors.white),
                       ),
-                      const SizedBox(height: 10), // Espacio entre los dos textos
+                      SizedBox(height: 10),
                       Text(
                         weatherCondition,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 15.0,
-                          color: Color.fromARGB(255, 182, 182, 182),
-                        ),
+                        style: TextStyle(fontSize: 15.0, color: Colors.grey[350]),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 20), // Espacio entre los dos elementos
-                Image.network(
-                  imageUrl,
-                  fit: BoxFit.contain,
-                  width: 100.0,
-                  height: 100.0,
-                ),
+                Image.network(imageUrl, fit: BoxFit.contain, width: 100.0, height: 100.0),
               ],
             ),
-            const SizedBox(height: 20), // Espacio entre los dos elementos
+            SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CustomCard(icon: Icons.ac_unit, text: _weatherData?.humedad ?? "sin datos" ),
+                CustomCard(icon: Icons.ac_unit, text: _weatherData?.humedad ?? "sin datos"),
                 CustomCard(icon: Icons.wb_sunny, text: _weatherData?.radiacion ?? "sin datos"),
                 CustomCard(icon: Icons.cloud, text: _weatherData?.precipitacion ?? "sin datos"),
               ],
