@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ecosfera/presentation/models/weather_record.dart';
 import 'package:ecosfera/presentation/services/services.dart';
 import 'package:ecosfera/presentation/widgets/custom_card.dart';
+import 'package:ecosfera/presentation/widgets/compass.dart';
 import 'package:ecosfera/presentation/Classes/weather_condition_resolver.dart';
 void main() => runApp(MyApp());
 
@@ -195,6 +196,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? '${double.parse(_weatherData!.precipitacion).toStringAsFixed(2)}%' // Convierte a double, redondea a dos decimales y agrega el símbolo de porcentaje
                           : 'sin datos',
                       title: 'Precipitación'),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  vertical: 20), // Agregar padding solo en Y
+              decoration: BoxDecoration(
+                color: const Color(0xFF20232A), // Color de fondo
+                borderRadius:
+                    BorderRadius.circular(10), // Opcional: bordes redondeados
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                 WindSpeedCompass(windDirectionDegrees: _weatherData?.direccion ?? 0,windSpeed: _weatherData?.velocidad ?? 0),  // Correct usage with named parameter
                 ],
               ),
             )
