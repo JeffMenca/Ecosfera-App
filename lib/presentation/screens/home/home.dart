@@ -65,9 +65,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     locations = [
-      LatLng(14.8461641, -91.5385392),
-      LatLng(14.856629, -91.621573),
-      LatLng(14.809332, -91.450807)
+      const LatLng(14.8461641, -91.5385392),
+      const LatLng(14.856629, -91.621573),
+      const LatLng(14.809332, -91.450807)
     ];
     String environment = 'Cunoc';
     LatLng _center = const LatLng(14.8461641, -91.5385392);
@@ -81,10 +81,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchWeatherData(environment);
     updateMapLocation();
   }
-void _onMapCreated(GoogleMapController controller) {
+
+  void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     if (mounted) {
-      updateMapLocation();  // Ensure widget is still in tree
+      updateMapLocation(); // Ensure widget is still in tree
     }
   }
 
@@ -98,11 +99,11 @@ void _onMapCreated(GoogleMapController controller) {
     }
   }
 
-   @override
+  @override
   void didUpdateWidget(HomeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.pageIndex != widget.pageIndex && mapController != null) {
-      updateMapLocation();  // Update location safely
+      updateMapLocation(); // Update location safely
     }
   }
 
@@ -191,12 +192,12 @@ void _onMapCreated(GoogleMapController controller) {
               ],
             ),
           ),
-          backgroundColor: const Color(0xFF1B1D1F),
+          backgroundColor: const Color(0xFF1e2123),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(
                 0), // Altura 0 para evitar la línea debajo
             child: Container(
-              margin: const EdgeInsets.only(top: 10,bottom: 15),
+              margin: const EdgeInsets.only(top: 10, bottom: 15),
               padding: const EdgeInsets.only(left: 30),
               alignment: Alignment.centerLeft,
               height: 20,
@@ -347,20 +348,32 @@ void _onMapCreated(GoogleMapController controller) {
               ),
             ),
             Container(
-              height: 100.0, // Altura del contenedor del mapa
-              child: GoogleMap(
-                onMapCreated: _onMapCreated,
-                initialCameraPosition: CameraPosition(
-                  target: locations.isNotEmpty ? locations[widget.pageIndex] : LatLng(0, 0),
-                  zoom: 11.0,
-                ),
-                markers: {
-                  if (locations.isNotEmpty)
-                    Marker(
-                      markerId: MarkerId('marker_${widget.pageIndex}'),
-                      position: locations[widget.pageIndex],
+              color: const Color(0xFF20232A), // Color de fondo rojo
+              padding: const EdgeInsets.all(10), // Padding de 10 en todos los lados
+              margin: const EdgeInsets.only(
+                  top: 0.0), // Margen de 10 en todos los lados
+              child: SizedBox(
+                height: 100.0, // Altura del contenedor del mapa
+                child: Padding(
+                  padding:
+                      const EdgeInsets.all(8.0), // Padding interno del mapa
+                  child: GoogleMap(
+                    onMapCreated: _onMapCreated,
+                    initialCameraPosition: CameraPosition(
+                      target: locations.isNotEmpty
+                          ? locations[widget.pageIndex]
+                          : const LatLng(0, 0),
+                      zoom: 11.0,
                     ),
-                },
+                    markers: {
+                      if (locations.isNotEmpty)
+                        Marker(
+                          markerId: MarkerId('marker_${widget.pageIndex}'),
+                          position: locations[widget.pageIndex],
+                        ),
+                    },
+                  ),
+                ),
               ),
             ),
           ],
