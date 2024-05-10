@@ -246,8 +246,8 @@ void _onMapCreated(GoogleMapController controller) {
                 Image.network(
                   weatherImageUrl,
                   fit: BoxFit.contain,
-                  width: 100.0,
-                  height: 100.0,
+                  width: 110.0,
+                  height: 110.0,
                 ),
               ],
             ),
