@@ -25,10 +25,11 @@ class WindSpeedCompass extends StatelessWidget {
               painter: WindCompassPainter(windDirectionDegrees, windSpeed),
             ),
           ),
-          const Icon(
-            Icons.wind_power, // Cambia esto por el ícono que desees
-            size: 25,
-            color: Colors.white,
+          Image.network(
+            'https://picjj.com/images/2024/05/10/FUbXa.gif',
+            fit: BoxFit.contain,
+            width: 50.0,
+            height: 50.0,
           ),
         ],
       ),
