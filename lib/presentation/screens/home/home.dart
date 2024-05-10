@@ -135,7 +135,7 @@ void _onMapCreated(GoogleMapController controller) {
           _weatherData?.temperatura ?? 0, humidity, radiation, precipitation);
 
       // Ahora obtenemos la URL de la imagen correspondiente a la condición del clima
-      //weatherImageUrl = weatherResolver.resolveWeatherImage(weatherCondition);
+      weatherImageUrl = weatherResolver.resolveWeatherImage(weatherCondition);
     } catch (e) {
       _error = e.toString();
       print(_error);
@@ -162,38 +162,53 @@ void _onMapCreated(GoogleMapController controller) {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Ecosfera',
-              style: TextStyle(color: Color(0xFFF3F3F3)),
-            ),
-            if (_dateTimeString != null)
-              Text(
-                _dateTimeString!,
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 204, 204, 204),
-                  fontSize: 14,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(
+            100.0), // Ajusta la altura del AppBar según sea necesario
+        child: AppBar(
+          title: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Image.network(
+                    'https://picjj.com/images/2024/05/10/FxCbv.png',
+                    fit: BoxFit.contain,
+                    width: 200.0,
+                    height: 200.0,
+                  ),
                 ),
-              ),
-          ],
-        ), // Mostrar fecha debajo del título de la aplicación
-        backgroundColor: const Color(0xFF1B1D1F),
-        bottom: PreferredSize(
-          preferredSize:
-              Size.fromHeight(0), // Altura 0 para evitar la línea debajo
-          child: Container(
-            padding: EdgeInsets.only(left: 16),
-            alignment: Alignment.centerLeft,
-            height: 20,
-            child: _weatherData != null && _weatherData!.fechaHora != null
-                ? Text(
-                    _weatherData!.fechaHora!,
-                    style: TextStyle(color: Color.fromARGB(255, 193, 193, 193)),
-                  )
-                : SizedBox.shrink(),
+                if (_dateTimeString != null)
+                  Text(
+                    _dateTimeString!,
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 204, 204, 204),
+                      fontSize: 14,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          backgroundColor: const Color(0xFF1B1D1F),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(
+                0), // Altura 0 para evitar la línea debajo
+            child: Container(
+              margin: const EdgeInsets.only(top: 10,bottom: 15),
+              padding: const EdgeInsets.only(left: 30),
+              alignment: Alignment.centerLeft,
+              height: 20,
+              child: _weatherData != null && _weatherData!.fechaHora != null
+                  ? Text(
+                      _weatherData!.fechaHora!,
+                      style: const TextStyle(
+                        color: Color.fromARGB(255, 193, 193, 193),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
           ),
         ),
       ),
@@ -250,19 +265,19 @@ void _onMapCreated(GoogleMapController controller) {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomCard(
-                      icon: 'https://picjj.com/images/2024/05/09/pY2Of.png',
+                      icon: 'https://picjj.com/images/2024/05/10/FQHHH.gif',
                       data: _weatherData?.humedad != null
                           ? '${double.parse(_weatherData!.humedad).toStringAsFixed(2)}%' // Convierte a double, redondea a dos decimales y agrega el símbolo de porcentaje
                           : 'sin datos',
                       title: 'Humedad'),
                   CustomCard(
-                      icon: 'https://picjj.com/images/2024/05/09/pEXHU.png',
+                      icon: 'https://picjj.com/images/2024/05/10/FI0rP.gif',
                       data: _weatherData?.radiacion != null
                           ? '${double.parse(_weatherData!.radiacion).toStringAsFixed(2)} mSv' // Convierte a double, redondea a dos decimales y agrega el símbolo de porcentaje
                           : 'sin datos',
                       title: 'Radiación'),
                   CustomCard(
-                      icon: 'https://picjj.com/images/2024/05/09/pE88f.png',
+                      icon: 'https://picjj.com/images/2024/05/10/FO7MD.gif',
                       data: _weatherData?.precipitacion != null
                           ? '${double.parse(_weatherData!.precipitacion).toStringAsFixed(2)}%' // Convierte a double, redondea a dos decimales y agrega el símbolo de porcentaje
                           : 'sin datos',

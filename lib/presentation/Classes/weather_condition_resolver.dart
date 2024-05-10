@@ -30,25 +30,25 @@ class WeatherConditionResolver {
   String resolveWeatherImage(String weatherCondition) {
     switch (weatherCondition.toLowerCase()) {
       case 'calor seco':
-        return 'https://example.com/calor_seco.png';
+        return 'https://picjj.com/images/2024/05/10/F384f.gif';
       case 'calor húmedo':
-        return 'https://example.com/calor_humedo.png';
+        return 'https://picjj.com/images/2024/05/10/F384f.gif';
       case 'frío seco':
-        return 'https://example.com/frio_seco.png';
+        return 'https://picjj.com/images/2024/05/10/F3v7v.gif';
       case 'frío húmedo':
-        return 'https://example.com/frio_humedo.png';
+        return 'https://picjj.com/images/2024/05/10/F3v7v.gif';
       case 'clima agradable':
-        return 'https://example.com/clima_agradable.png';
+        return 'https://picjj.com/images/2024/05/10/F384f.gif';
       case 'húmedo y cómodo':
-        return 'https://example.com/humedo_comodo.png';
+        return 'https://picjj.com/images/2024/05/10/F384f.gif';
       case 'nublado':
-        return 'https://example.com/nublado.png';
+        return 'https://picjj.com/images/2024/05/10/F3v7v.gif';
       case 'lluvioso':
-        return 'https://example.com/lluvioso.png';
+        return 'https://picjj.com/images/2024/05/10/F3XlU.gif';
       case 'soleado':
-        return 'https://example.com/soleado.png';
+        return 'https://picjj.com/images/2024/05/10/F384f.gif';
       default:
-        return 'https://example.com/default.png';
+        return 'https://picjj.com/images/2024/05/10/F384f.gif';
     }
   }
 }
