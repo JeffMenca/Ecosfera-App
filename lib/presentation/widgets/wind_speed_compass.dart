@@ -17,16 +17,17 @@ class WindSpeedCompass extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // ignore: sized_box_for_whitespace
           Container(
-            width: 250,
-            height: 250,
+            width: 150,
+            height: 150,
             child: CustomPaint(
               painter: WindCompassPainter(windDirectionDegrees, windSpeed),
             ),
           ),
-          Icon(
+          const Icon(
             Icons.wind_power, // Cambia esto por el ícono que desees
-            size: 30,
+            size: 25,
             color: Colors.white,
           ),
         ],
@@ -89,7 +90,7 @@ class WindCompassPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,
     );
-    final textStyle = TextStyle(
+    const textStyle = TextStyle(
       color: Colors.white,
       fontSize: 18,
     );
@@ -136,13 +137,13 @@ class WindCompassPainter extends CustomPainter {
     final textPainter = TextPainter(
       text: TextSpan(
         text: '${speed.toStringAsFixed(1)} m/s',
-        style: TextStyle(color: Colors.white, fontSize: 16),
+        style: const TextStyle(color: Colors.white, fontSize: 12),
       ),
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.center,
     );
     textPainter.layout();
-    textPainter.paint(canvas, center - Offset(textPainter.width / 2, textPainter.height + 30)); // Adjust position as needed
+    textPainter.paint(canvas, center - Offset(textPainter.width / 2, textPainter.height + 20)); // Adjust position as needed
   }
 
   @override
