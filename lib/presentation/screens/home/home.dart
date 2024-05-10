@@ -5,6 +5,7 @@ import 'package:ecosfera/presentation/widgets/custom_card.dart';
 import 'package:ecosfera/presentation/widgets/wind_speed_compass.dart';
 import 'package:ecosfera/presentation/widgets/custom_card_separated.dart';
 import 'package:ecosfera/presentation/Classes/weather_condition_resolver.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() => runApp(MyApp());
 
@@ -45,6 +46,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  GoogleMapController? mapController;
+  List<LatLng> locations = [];
+
   String temperature = 'Sin datos';
   String weatherCondition = "Desconocido";
   String weatherImageUrl =
@@ -60,13 +64,46 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    locations = [
+      LatLng(14.8461641, -91.5385392),
+      LatLng(14.856629, -91.621573),
+      LatLng(14.809332, -91.450807)
+    ];
     String environment = 'Cunoc';
+    LatLng _center = const LatLng(14.8461641, -91.5385392);
     if (widget.pageIndex == 1) {
       environment = 'Conce';
+      _center = const LatLng(14.856629, -91.621573);
     } else if (widget.pageIndex == 2) {
       environment = 'Cantel';
+      _center = const LatLng(14.809332, -91.450807);
     }
     _fetchWeatherData(environment);
+    updateMapLocation();
+  }
+void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+    if (mounted) {
+      updateMapLocation();  // Ensure widget is still in tree
+    }
+  }
+
+  void updateMapLocation() {
+    if (mapController != null && locations.isNotEmpty) {
+      mapController!
+          .animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: locations[widget.pageIndex],
+        zoom: 11.0,
+      )));
+    }
+  }
+
+   @override
+  void didUpdateWidget(HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.pageIndex != widget.pageIndex && mapController != null) {
+      updateMapLocation();  // Update location safely
+    }
   }
 
   double? tryParseDouble(String? value) {
@@ -113,15 +150,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor = const Color(0xFF1B1D1F);
+    Color backgroundColor = const Color(0xFF1E2123);
     Color appBarColor = const Color(0xFF1B1D1F);
 
     if (widget.pageIndex == 1) {
-      backgroundColor = const Color.fromARGB(255, 128, 246, 161)!;
-      appBarColor = Colors.green[800]!;
+      backgroundColor = const Color(0xFF1A1E23)!;
+      appBarColor = const Color(0xFF1B1D1F)!;
     } else if (widget.pageIndex == 2) {
-      backgroundColor = Colors.redAccent[100]!;
-      appBarColor = Colors.red[800]!;
+      backgroundColor = const Color(0xFF1B2128)!;
+      appBarColor = const Color(0xFF1B1D1F)!;
     }
 
     return Scaffold(
@@ -292,6 +329,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     windSpeed: _weatherData?.velocidad ?? 0,
                   ),
                 ],
+              ),
+            ),
+            Container(
+              height: 100.0, // Altura del contenedor del mapa
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(
+                  target: locations.isNotEmpty ? locations[widget.pageIndex] : LatLng(0, 0),
+                  zoom: 11.0,
+                ),
+                markers: {
+                  if (locations.isNotEmpty)
+                    Marker(
+                      markerId: MarkerId('marker_${widget.pageIndex}'),
+                      position: locations[widget.pageIndex],
+                    ),
+                },
               ),
             ),
           ],
