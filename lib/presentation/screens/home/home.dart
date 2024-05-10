@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:ecosfera/presentation/models/weather_record.dart';
 import 'package:ecosfera/presentation/services/services.dart';
 import 'package:ecosfera/presentation/widgets/custom_card.dart';
+import 'package:ecosfera/presentation/widgets/custom_card_separated.dart';
 import 'package:ecosfera/presentation/Classes/weather_condition_resolver.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -22,15 +24,14 @@ class MainPageView extends StatelessWidget {
         itemCount: 3,
         itemBuilder: (context, index) {
           return HomeScreen(
-            key: UniqueKey(), 
-            pageIndex: index,  
+            key: UniqueKey(),
+            pageIndex: index,
           );
         },
       ),
     );
   }
 }
-
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/';
@@ -53,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
   WeatherRecord? _weatherData;
   bool _isLoading = true;
   String? _error;
+  String? _dateTimeString;
 
   @override
   void initState() {
@@ -110,8 +112,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor = Color(0xFF1B1D1F); 
-    Color appBarColor = Color(0xFF1B1D1F); 
+    Color backgroundColor = const Color(0xFF1B1D1F);
+    Color appBarColor = const Color(0xFF1B1D1F);
 
     if (widget.pageIndex == 1) {
       backgroundColor = const Color.fromARGB(255, 128, 246, 161)!;
@@ -123,12 +125,42 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text('Ecosfera', style: TextStyle(color: Color(0xFFF3F3F3))),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Ecosfera',
+              style: TextStyle(color: Color(0xFFF3F3F3)),
+            ),
+            if (_dateTimeString != null)
+              Text(
+                _dateTimeString!,
+                style: const TextStyle(
+                  color: Color.fromARGB(255, 204, 204, 204),
+                  fontSize: 14,
+                ),
+              ),
+          ],
+        ), // Mostrar fecha debajo del título de la aplicación
         backgroundColor: const Color(0xFF1B1D1F),
+        bottom: PreferredSize(
+          preferredSize:
+              Size.fromHeight(0), // Altura 0 para evitar la línea debajo
+          child: Container(
+            padding: EdgeInsets.only(left: 16),
+            alignment: Alignment.centerLeft,
+            height: 20,
+            child: _weatherData != null && _weatherData!.fechaHora != null
+                ? Text(
+                    _weatherData!.fechaHora!,
+                    style: TextStyle(color: Color.fromARGB(255, 193, 193, 193)),
+                  )
+                : SizedBox.shrink(),
+          ),
+        ),
       ),
       body: Container(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         color: backgroundColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,13 +176,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         temperature,
-                        style: TextStyle(fontSize: 50.0, color: Colors.white),
+                        style: const TextStyle(
+                            fontSize: 50.0, color: Colors.white),
                       ),
                       const SizedBox(
                           height: 10), // Espacio entre los dos textos
                       Text(
                         weatherCondition,
-                        style: TextStyle(fontSize: 15.0, color: Colors.grey[350]),
+                        style:
+                            TextStyle(fontSize: 15.0, color: Colors.grey[350]),
                       ),
                     ],
                   ),
@@ -178,26 +212,67 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomCard(
-                      icon: Icons.ac_unit,
+                      icon: 'https://picjj.com/images/2024/05/09/pY2Of.png',
                       data: _weatherData?.humedad != null
                           ? '${double.parse(_weatherData!.humedad).toStringAsFixed(2)}%' // Convierte a double, redondea a dos decimales y agrega el símbolo de porcentaje
                           : 'sin datos',
                       title: 'Humedad'),
                   CustomCard(
-                      icon: Icons.wb_sunny,
+                      icon: 'https://picjj.com/images/2024/05/09/pEXHU.png',
                       data: _weatherData?.radiacion != null
                           ? '${double.parse(_weatherData!.radiacion).toStringAsFixed(2)} mSv' // Convierte a double, redondea a dos decimales y agrega el símbolo de porcentaje
                           : 'sin datos',
                       title: 'Radiación'),
                   CustomCard(
-                      icon: Icons.cloud,
+                      icon: 'https://picjj.com/images/2024/05/09/pE88f.png',
                       data: _weatherData?.precipitacion != null
                           ? '${double.parse(_weatherData!.precipitacion).toStringAsFixed(2)}%' // Convierte a double, redondea a dos decimales y agrega el símbolo de porcentaje
                           : 'sin datos',
                       title: 'Precipitación'),
                 ],
               ),
-            )
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 30),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    flex: 1,
+                    child: CustomCardSeparated(
+                      icon: 'https://picjj.com/images/2024/05/09/pAJJI.png',
+                      data: _weatherData?.suelo1 != null
+                          ? '${double.parse(_weatherData!.humedad).toStringAsFixed(2)}%'
+                          : 'sin datos',
+                      title: 'Suelo 1',
+                    ),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: CustomCardSeparated(
+                      icon: 'https://picjj.com/images/2024/05/09/pADQ2.png',
+                      data: _weatherData?.suelo2 != null
+                          ? '${double.parse(_weatherData!.humedad).toStringAsFixed(2)}%'
+                          : 'sin datos',
+                      title: 'Suelo 2',
+                    ),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: CustomCardSeparated(
+                      icon: 'https://picjj.com/images/2024/05/09/pARE1.png',
+                      data: _weatherData?.suelo3 != null
+                          ? '${double.parse(_weatherData!.humedad).toStringAsFixed(2)}%'
+                          : 'sin datos',
+                      title: 'Suelo 3',
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

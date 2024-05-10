@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
-  final IconData icon;
+  final String icon;
   final String data;
   final String title;
 
@@ -17,25 +17,26 @@ class CustomCard extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Icon(
+          Image.network(
             icon,
-            size: 30,
-            color: Colors.white,
+            fit: BoxFit.contain,
+            width: 30.0,
+            height: 30.0,
           ),
           const SizedBox(height: 10),
           Text(
             data,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 15.0,
+              fontSize: 14.0,
               color: Colors.white,
             ),
           ),
-           Text(
+          Text(
             title,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 13.0,
+              fontSize: 12.0,
               color: Color.fromARGB(255, 182, 182, 182),
             ),
           ),
